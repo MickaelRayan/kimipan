@@ -144,6 +144,32 @@ f.prev_answer = f.answer;
 *judge
 [wait time=100]
 
+
+; ==== ★ パンツ色の確定（ここ）====
+[if exp="f.player == f.answer"]
+    [eval exp="f.pants_color = f.player"]  ; 当たり → 選んだ色
+[else]
+    [eval exp="f.pants_color = 1 - f.player"] ; ハズレ → 逆の色
+[endif]
+
+; ★ ここでCG・立ち絵を切り替える
+[if exp="f.pants_color == 0"]
+    [chara_mod name="akane" face="white_pants"]
+[else]
+    [chara_mod name="akane" face="black_pants"]
+[endif]
+
+; ↓ そのあと普通に結果処理
+[if exp="f.player == f.answer"]
+    [eval exp="f.win += 1"]
+    #あかね
+    ……正解[p]
+[else]
+    #あかね
+    はずれー[p]
+[endif]
+; ================
+
 ; ノーパン事故（結果台詞の前に割り込み）
 [eval exp="f.nopan = (Math.random() < 0.1)"]
 [if exp="f.nopan"]
@@ -161,8 +187,9 @@ f.prev_answer = f.answer;
     …[p ]……[p ]…………っ！[p ]
     [quake count=5 time=200]
     #みお
-    しまったーーー！[r ]
-    今、パンツ履いてなかった！！[p ]
+    さっき……[r ]
+    パンツ、脱いできちゃったんだった……♡[p ]
+    はずかしー！！[p ]
     [jump target="end_nopan2"]
   [endif]
 [endif]
