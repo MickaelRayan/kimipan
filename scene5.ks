@@ -1,5 +1,6 @@
 ;ティラノスクリプトサンプルゲーム
 *start
+[eval exp="f.start_serif = 0"]
 
 [cm  ]
 [clearfix]
@@ -72,8 +73,12 @@ f.prev_answer = f.answer;
 ; 立ち絵（スカート捲り）
 [bg storage="rouka.jpg" time="100"]
 [chara_show name="akane" face="normal" width="420" height="auto"  left="400" top="0"  time="30" ]
-#あかね
-あなた、いきなり来て何バカなこと言ってるの？[p ]
+
+[if exp="f.start_serif == 0"]
+  #あかね
+  あなた、いきなり来て何バカなこと言ってるの？[p ]
+    [eval exp="f.start_serif = 1"]
+[endif]
 
 [chara_mod name="akane" face="before"]
 #あかね
@@ -85,7 +90,7 @@ f.prev_answer = f.answer;
 *choose_white
 [eval exp="f.player = 0"]
 ; ★ ノーパン抽選（例：20%）
-[if exp="Math.random() < 0.15"]
+[if exp="Math.random() < 0.1"]
   [jump target="nopan"]
 [endif]
 [jump target="judge"]
@@ -93,7 +98,7 @@ f.prev_answer = f.answer;
 *choose_black
 [eval exp="f.player = 1"]
 ; ★ ノーパン抽選（例：20%）
-[if exp="Math.random() < 0.15"]
+[if exp="Math.random() < 0.1"]
   [jump target="nopan"]
 [endif]
 [jump target="judge"]
@@ -105,9 +110,14 @@ f.prev_answer = f.answer;
     ; 当たり時：選んだ色のパンツ姿
     [if exp="f.answer == 0"]
         [chara_mod name="akane" face="white_pants"]
+        @layopt layer=message0 visible=false
+        [l ]
     [else]
         [chara_mod name="akane" face="black_pants"]
+        @layopt layer=message0 visible=false
+        [l ]
     [endif]
+    @layopt layer=message0 visible=true
     #あかね
     ……正解[p ]
 [else]
@@ -119,11 +129,9 @@ f.prev_answer = f.answer;
 [eval exp="f.turn += 1"]
 [jump target="game_loop"]
 
-
-
 *result
 #
-「あなたは[emb exp="f.win"]回当てました」
+あなたは[emb exp="f.win"]回当てました
 [p ]
 [jump cond="f.win==3" target="end_all_nude"]
 [jump cond="f.win==2" target="end_underwear"]
@@ -160,6 +168,7 @@ end_topless[p ]
 [chara_hide name="akane" ]
 @layopt layer=message0 visible=false
 [clearfix]
+[jump storage="title.ks"]
 
 *end_fail
 [cm]
@@ -170,14 +179,22 @@ end_fail[p ]
 [chara_hide name="akane" ]
 @layopt layer=message0 visible=false
 [clearfix]
+[jump storage="title.ks"]
 
 *nopan
 [cm]
 [clearfix]
- [chara_mod name="akane" face="doki"]
+ [chara_mod name="akane" face="end_nopan"]
 #あかね
 nopan[p]
+@layopt layer=message0 visible=false
+[l ]
 [chara_hide name="akane" ]
+@layopt layer=message0 visible=true
+[image storage="../bgimage/no_panEnd.PNG" ]
+#
+ノーパンエンド
+[l ]
 @layopt layer=message0 visible=false
 [jump storage="title.ks"]
 
