@@ -1,4 +1,3 @@
-;ティラノスクリプトサンプルゲーム
 *start
 
 [cm  ]
@@ -6,7 +5,6 @@
 [start_keyconfig]
 [bg storage="rouka.jpg" time="0"]
 [eval exp="f.nopan = 0"]
-
 
 ; 設定ここから
 @hidemenubutton
@@ -21,7 +19,10 @@
 [chara_new  name="akane" storage="chara/akane/normal.png" jname="あかね"  ]
 ;キャラクターの表情登録
 [chara_face name="akane" face="normal" storage="chara/akane/normal.png"]
-[chara_face name="akane" face="angry" storage="chara/akane/angry.png"]
+[chara_face name="akane" face="before" storage="chara/akane/before.png"]
+[chara_face name="akane" face="black_pants" storage="chara/akane/black.png"]
+[chara_face name="akane" face="white_pants" storage="chara/akane/white.png"]
+[chara_face name="akane" face="end_nopan" storage="chara/akane/no_pan.png"]
 [chara_face name="akane" face="doki" storage="chara/akane/doki.png"]
 [chara_face name="akane" face="happy" storage="chara/akane/happy.png"]
 [chara_face name="akane" face="sad" storage="chara/akane/sad.png"]
@@ -41,10 +42,10 @@
 [layopt layer="message0" visible="false"]
 
 [locate x=320 y=220]
-[button graphic="../fgimage/icon/onigiri.png"  width="300" height="300"   target=*pick_akane]
+[button graphic="../fgimage/icon/pic_akane.PNG"  width="300" height="300"   target=*pick_akane]
 
 [locate x=680 y=220]
-[button graphic="../fgimage/icon/donuts.png" width="300" height="300"  target=*pick_mio]
+[button graphic="../fgimage/icon/pic_mio.PNG" width="300" height="300"  target=*pick_mio]
 [s]
 
 *pick_akane
@@ -94,18 +95,24 @@ f.prev_answer = f.answer;
 [endscript]
 
 ; 背景・立ち絵（※みお絵を登録したらここを差し替え）
-[bg storage="rouka.jpg" time="100"]
-[chara_show name="akane" face="happy"]
+[bg storage="RF_noon.jpg" time="100"]
+[chara_show name="akane" face="normal"]
 
 ; 初回だけ・キャラ別煽り（turn==0で1回だけ）
 [if exp="f.turn == 0 && f.chara=='akane'"]
 #あかね
+ハァ？パンツを見せろ？[r ]
+あなた、いきなり来て何バカなこと言ってるの？[p ]
 この私のパンツを見ようなんて、いい度胸してるじゃない。[r ]
+[chara_show name="akane" face="normal"]
 じゃあ勝負してあげるわ！[p ]
 [elsif exp="f.turn == 0 && f.chara=='mio'"]
 #みお
-……へえ。[r ]
-あたしのパンツ、気になるんだ？[p ]
+え?ぱ、パンツですか？[r ]
+今ここで見せろ？[p ]
+そ、そそそ……、そんなこと言われましても……[p ]
+……[r ]
+…………そ、そこまで言うなら……。[p ]
 [endif]
 
 ; 問題文（2回目以降は共通）
@@ -114,7 +121,7 @@ f.prev_answer = f.answer;
 今履いてるパンツ……、何色だと思う？[p ]
 [else]
 #みお
-私のパンツ、何色だと思う？[p ]
+じゃあ、私のパンツの色……、当ててみてください……？[p ]
 [endif]
 
 ; 選択肢（見た目だけキャラ差分）
@@ -173,7 +180,7 @@ f.prev_answer = f.answer;
 ; ノーパン事故（結果台詞の前に割り込み）
 [eval exp="f.nopan = (Math.random() < 0.1)"]
 [if exp="f.nopan"]
-  [chara_mod name="akane" face="normal"]
+  [chara_mod name="akane" face="doki"]
   [if exp="f.chara=='akane'"]
     #あかね
     …[p ]……[p ]…………っ！[p ]
@@ -203,7 +210,7 @@ f.prev_answer = f.answer;
 
   ; テンション演出（必要最低限・共通）
   [if exp="f.tension == 3"]
-    [chara_mod name="akane" face="sad"]
+    [chara_mod name="akane" face="doki"]
     [if exp="f.chara=='akane'"]
       #あかね
       ……今の、ちょっと、嫌な感じ[p ]
@@ -212,7 +219,7 @@ f.prev_answer = f.answer;
       ……うう[p ]
     [endif]
   [elsif exp="f.tension >= 4"]
-    [chara_mod name="akane" face="normal"]
+    [chara_mod name="akane" face="sad"]
     [if exp="f.chara=='akane'"]
       #あかね
       ……ねえ[p ]……続けるの？[p ]
@@ -223,6 +230,7 @@ f.prev_answer = f.answer;
   [endif]
 
   [if exp="f.chara=='akane'"]
+      [chara_mod name="akane" face="before"]
     #あかね
     ……正解[p ]
   [else]
@@ -259,29 +267,35 @@ f.prev_answer = f.answer;
 #
 「あなたは[emb exp="f.win"]回当てました」
 [p ]
-[jump cond="f.win==3" target="end_all_nude"]
-[jump cond="f.win==2" target="end_underwear"]
-[jump cond="f.win==1" target="end_topless"]
+[jump cond="f.win==3" target="end_all_win"]
+[jump cond="f.win==2" target="end_win_2"]
+[jump cond="f.win==1" target="end_win_1"]
 [jump target="end_fail"]
 
-*end_all_nude
+*end_all_win
 [chara_hide name="akane"]
-[image storage="../bgimage/room.jpg" ]
+[image storage="../bgimage/win3_1.PNG" ]
 [quake count=5 time=30]
 #あかね
 [font size=30]
-……いやぁっーーー！![r ]
-服がビリビリだよぉ……！[p ]
+はぁっ ……、いや ……[r ]
+ホントに ……、入れる気？[p ]
+#
+気がつくと俺はあかねを全裸にひん剥き、愚息を膣口に充てているところだった。[p ]
+#あかね
+あっ ……、おちんちんおっきぃ ……[p ]
+#
+じゅぷっ……、じゅぷぷぷぷっ…………♡[p ]
 
 [position layer="message0" opacity="255"]
 #
 [font size=40 color=red]
-あかねEND 4 ビリビリ[p ]
+あかねEND 4 ちんぽに屈服[p ]
 ; ★ 元に戻す（次のループやタイトル用）
 [position layer="message0" left=160 top=500 width=1000 height=200 page=fore visible=true  page="fore" opacity="128" ]
 [jump storage="scene4.ks"]
 
-*end_underwear
+*end_win_2
 [chara_hide name="akane"]
 [image storage="../bgimage/room.jpg" ]
 #あかね
@@ -290,30 +304,34 @@ f.prev_answer = f.answer;
 [position layer="message0" opacity="255"]
 #
 [font size=40 color=red]
-あかねEND 3 下着[p ]
+あかねEND 3 おっぱい[p ]
 ; ★ 元に戻す（次のループやタイトル用）
 [position layer="message0" left=160 top=500 width=1000 height=200 page=fore visible=true  page="fore" opacity="128" ]
 [jump storage="scene4.ks"]
 
-*end_topless
+*end_win_1
 [chara_hide name="akane"]
-[image storage="../bgimage/room.jpg" ]
+[image storage="../bgimage/win2.PNG" ]
 #あかね
 一回だけ？ しょぼ[p ]
 
 [position layer="message0" opacity="255"]
 #
 [font size=40 color=red]
-あかねEND 1 ざぁこ♡[p ]
+あかねEND 1 パンツ越し[p ]
 ; ★ 元に戻す（次のループやタイトル用）
 [position layer="message0" left=160 top=500 width=1000 height=200 page=fore visible=true  page="fore" opacity="128" ]
 [jump storage="scene4.ks"]
 
 *end_fail
 [chara_hide name="akane"]
-[image storage="../bgimage/room.jpg" ]
+[image storage="../bgimage/win_zero.PNG" ]
 #あかね
-ばーか、ばーかw[p ]
+おちんちん入れたぁい♡[r ]
+残念！[p ]
+一度も勝てないような雑魚ちんこなんて、入れませぇん♡[p ]
+[font size=40]
+ばーかwww[p ]
 
 [position layer="message0" opacity="255"]
 #
@@ -325,7 +343,7 @@ f.prev_answer = f.answer;
 
 *end_nopan
 [chara_hide name="akane"]
-[image storage="../bgimage/room.jpg" ]
+[image storage="../bgimage/no_panEnd.PNG" ]
 #あかね
 わーん！[r ]
 これじゃあたし、痴女だー！[p ]
