@@ -146,6 +146,18 @@ f.prev_answer = f.answer;
 [s]
 [jump target="wait_select"]
 
+*choose_0
+[eval exp="f.player=0"]
+[eval exp="f.did_select=1"]
+[cm]
+    [jump target="wait_select"]
+
+*choose_1
+[eval exp="f.player=1"]
+[eval exp="f.did_select=1"]
+[cm]
+    [jump target="wait_select"]
+    
 *wait_select
 ; glinkを押して did_select=1 になるまで、ここで足止め
 [if exp="f.did_select != 1"]
@@ -153,14 +165,7 @@ f.prev_answer = f.answer;
 [endif]
 [jump target="judge"]
 
-*choose_0
-[eval exp="f.player=0"]
-[eval exp="f.did_select=1"]
-[cm]
-*choose_1
-[eval exp="f.player=1"]
-[eval exp="f.did_select=1"]
-[cm]
+
 
 
 
