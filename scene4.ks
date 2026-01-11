@@ -156,15 +156,16 @@ f.prev_answer = f.answer;
 *judge
 [wait time=100]
 
-
 ; ==== ★ 勝敗判定 ====
 [if exp="f.player == f.answer"]
     [eval exp="f.pants_color = f.player"]  
      [eval exp="f.win_streak += 1"]
+     [eval exp="f.nopan = 0"]
     ; 当たり → 選んだ色
 [else]
     [eval exp="f.pants_color = 1 - f.player"] 
     [eval exp="f.win_streak = 0"]
+    [eval exp="f.nopan = 0"]
     ; ハズレ → 逆の色
 [endif]
 
@@ -190,6 +191,7 @@ f.prev_answer = f.answer;
 ; 2連勝演出などをここに追加
 [if exp="f.win_streak == 2"]
     [if exp="f.chara == 'akane'"]
+         [eval exp="f.nopan = 0"]
         #あかね
         ……ちょっと。[r ]
         なんでそんなに人のパンツの色、当てられるのよ？[p ]
@@ -225,51 +227,51 @@ f.prev_answer = f.answer;
 [endif]
 
 ; テンション加算
-[eval exp="f.tension += 1"]
+; [eval exp="f.tension += 1"]
 
 ; 正誤
-[if exp="f.player == f.answer"]
-  [eval exp="f.win += 1"]
+; [if exp="f.player == f.answer"]
+;   [eval exp="f.win += 1"]
 
-  ; テンション演出（必要最低限・共通）
-  [if exp="f.tension == 3"]
-    [chara_mod name="akane" face="doki"]
-    [if exp="f.chara=='akane'"]
-      #あかね
-      ……今の、ちょっと、嫌な感じ[p ]
-    [else]
-      #みお
-      ……うう[p ]
-    [endif]
-  [elsif exp="f.tension >= 4"]
-    [chara_mod name="akane" face="sad"]
-    [if exp="f.chara=='akane'"]
-      #あかね
-      ……ねえ[p ]……続けるの？[p ]
-    [else]
-      #みお
-      ……まだ[p ]……まだ負けてないもん[p ]
-    [endif]
-  [endif]
+; ;   テンション演出（必要最低限・共通）
+;   [if exp="f.tension == 3"]
+;     [chara_mod name="akane" face="doki"]
+;     [if exp="f.chara=='akane'"]
+;       #あかね
+;       ……今の、ちょっと、嫌な感じ[p ]
+;     [else]
+;       #みお
+;       ……うう[p ]
+;     [endif]
+;   [elsif exp="f.tension >= 4"]
+;     [chara_mod name="akane" face="sad"]
+;     [if exp="f.chara=='akane'"]
+;       #あかね
+;       ……ねえ[p ]……続けるの？[p ]
+;     [else]
+;       #みお
+;       ……まだ[p ]……まだ負けてないもん[p ]
+;     [endif]
+;   [endif]
 
-  [if exp="f.chara=='akane'"]
-      [chara_mod name="akane" face="before"]
-    #あかね
-    ……正解[p ]
-  [else]
-    #みお
-    ……正解です[p ]
-  [endif]
-[else]
-  [chara_mod name="akane" face="happy"]
-  [if exp="f.chara=='akane'"]
-    #あかね
-    はずれー[p ]
-  [else]
-    #みお
-    あ、はずれです[p ]
-  [endif]
-[endif]
+;   [if exp="f.chara=='akane'"]
+;       [chara_mod name="akane" face="before"]
+;     #あかね
+;     ……正解2[p ]
+;   [else]
+;     #みお
+;     ……正解です[p ]
+;   [endif]
+; [else]
+;   [chara_mod name="akane" face="happy"]
+;   [if exp="f.chara=='akane'"]
+;     #あかね
+;     はずれー2[p ]
+;   [else]
+;     #みお
+;     あ、はずれです[p ]
+;   [endif]
+; [endif]
 
 ; ★ turnは必ずここで1回だけ進める
 [eval exp="f.turn += 1"]
@@ -288,7 +290,7 @@ f.prev_answer = f.answer;
 
 *result_akane
 #
-「あなたは[emb exp="f.win"]回当てました」
+あなたは[emb exp="f.win"]回当てました
 [p ]
 [jump cond="f.win==3" target="end_all_win"]
 [jump cond="f.win==2" target="end_win_2"]
@@ -298,10 +300,12 @@ f.prev_answer = f.answer;
 *end_all_win
 [chara_hide name="akane"]
 [image storage="../bgimage/win3_1.PNG" ]
+;メニューボタンの表示
+@showmenubutton
 [quake count=5 time=30]
 [font size=30]
 #
-全勝した……。俺は目の前の婦女子の下着の色を、３回全て当ててみせた。[r ]
+全勝した……。俺は目の前の婦女子の下着の色を、３回全て当ててみせた。[p]
 そう思った瞬間、俺の頭の中で何かが弾ける音がした。[p ]
 ……[r ]
 …………[p ]
@@ -312,7 +316,7 @@ f.prev_answer = f.answer;
 #
 気がつくと俺はあかねを全裸にひん剥き、愚息を膣口に充てているところだった。[p ]
 #
-何を今さら……。
+何を今さら……。[p ]
 [image storage="../bgimage/win3_2.PNG" ]
 #あかね
 あっあっ……、おちんちん入ってるぅ……[p ]
@@ -320,9 +324,9 @@ f.prev_answer = f.answer;
 じゅぷっ……、じゅぷぷぷぷっ…………♡[p ]
 [image storage="../bgimage/win3_3.PNG" ]
 #あかね
-あっあん♡
+あっあん♡[p ]
 #
-どぴゅっ……、どぴゅるるるるるっ……♡
+どぴゅっ……、どぴゅるるるるるっ……♡[p ]
 
 [position layer="message0" opacity="255"]
 #
@@ -334,7 +338,8 @@ f.prev_answer = f.answer;
 
 *end_win_2
 [chara_hide name="akane"]
-[image storage="../bgimage/room.jpg" ]
+@showmenubutton
+[image storage="../bgimage/win2.PNG" ]
 #あかね
 ふん、これで勝ったと思わないでよね！[p ]
 
@@ -348,7 +353,8 @@ f.prev_answer = f.answer;
 
 *end_win_1
 [chara_hide name="akane"]
-[image storage="../bgimage/win2.PNG" ]
+@showmenubutton
+[image storage="../bgimage/win_1.PNG" ]
 #あかね
 一回だけ？ しょぼ[p ]
 
@@ -362,6 +368,7 @@ f.prev_answer = f.answer;
 
 *end_fail
 [chara_hide name="akane"]
+@showmenubutton
 [image storage="../bgimage/win_zero.PNG" ]
 #あかね
 おちんちん入れたぁい♡[r ]
@@ -380,6 +387,7 @@ f.prev_answer = f.answer;
 
 *end_nopan
 [chara_hide name="akane"]
+@showmenubutton
 [image storage="../bgimage/no_panEnd.PNG" ]
 #あかね
 わーん！[r ]
