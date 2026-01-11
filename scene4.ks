@@ -128,42 +128,52 @@ f.prev_answer = f.answer;
 みおはおずおずと、スカートの裾を摘んだ。[p ]
 [endif]
 
+*select_pants
+; 毎回初期化
+[eval exp="f.did_select = 0"]
+[eval exp="f.player = -1"]
+
 ; 選択肢（見た目だけキャラ差分）
 [if exp="f.chara=='akane'"]
-[eval exp="f.did_select = 0"]
   [glink text="白" target="choose_0" size="28" x="80" width="300" y="250"]
   [glink text="黒" target="choose_1" size="28" x="80" width="300" y="350"]
-
 [else]
-[if exp="f.chara=='mio'"]
-[eval exp="f.did_select = 0"]
-  [glink text="ピンク" target="choose_0" size="28" x="80" width="300" y="250"]
-  [glink text="ブルー" target="choose_1" size="28" x="80" width="300" y="350"]
-[endif]
+        [if exp="f.chara=='mio'"]
+        [glink text="ピンク" target="choose_0" size="28" x="80" width="300" y="250"]
+        [glink text="ブルー" target="choose_1" size="28" x="80" width="300" y="350"]
+        [endif]
 [endif]
 [s]
+[jump target="wait_select"]
+
+*wait_select
+; glinkを押して did_select=1 になるまで、ここで足止め
+[if exp="f.did_select != 1"]
+    [jump target="select_pants"]
+[endif]
+[jump target="judge"]
 
 *choose_0
 [eval exp="f.player=0"]
 [eval exp="f.did_select=1"]
-; [eval exp="f.did_select=1"]
 [cm]
-[jump target="judge"]
-
 *choose_1
 [eval exp="f.player=1"]
 [eval exp="f.did_select=1"]
-; [eval exp="f.did_select=1"]
 [cm]
-[jump target="judge"]
+
 
 
 ;========================
 ; 判定（ノーパン→結果→turn++→次へ）
 ;========================
 *judge
+[if exp="f.did_select != 1 || (f.player != 0 && f.player != 1)"]
+    [jump target="game_loop"]
+[endif]
+
 [wait time=100]
-[eval exp="f.nopan = 0"]
+
 
 ; ==== ★ 勝敗判定 ====
 [if exp="f.player == f.answer"]
@@ -220,12 +230,16 @@ f.prev_answer = f.answer;
 [endif]
 
 ; ノーパン事故（結果台詞の前に割り込み）
-[if exp="f.did_select && (Math.random() < 0.9)"]
-  [eval exp="f.nopan = 1"]
-[else]
-  [eval exp="f.nopan = 0"]
+[eval exp="f.nopan = 0"]
+[if exp="f.did_select == 1 && (Math.random() < 0.9)"]
+    [eval exp="f.nopan = 1"]
 [endif]
-; [eval exp="f.did_select = 0"] 
+; [if exp="f.did_select && (Math.random() < 0.9)"]
+;   [eval exp="f.nopan = 1"]
+; [else]
+;   [eval exp="f.nopan = 0"]
+; [endif]
+
 
 [if exp="f.nopan"]
   [chara_mod name="akane" face="doki"]
@@ -248,6 +262,11 @@ f.prev_answer = f.answer;
     [jump target="end_nopan2"]
   [endif]
 [endif]
+
+[eval exp="f.did_select = 0"]
+[eval exp="f.player = -1"]
+[eval exp="f.nopan = 0"] 
+
 ; ★ turnは必ずここで1回だけ進める
 [eval exp="f.turn += 1"]
 [jump target="game_loop"]
