@@ -69,6 +69,7 @@
 [eval exp="f.turn=0"]         
 ; 0,1,2 の3回
 [eval exp="f.win=0"]
+[eval exp="f.win_streak=0"] 
 [eval exp="f.tension=0"]
 [eval exp="f.prev_answer=-1"]
 [jump target="game_loop"]
@@ -78,14 +79,19 @@
 ; 共通ループ（3回固定）
 ;========================
 *game_loop
-[if exp="f.turn >== 3"]
-  [jump target="*result_common"]
+[eval exp="f.did_select = 0"]
+[eval exp="f.player = -1"]
+[eval exp="f.nopan = 0"]
+[eval exp="f.nopan_checked=0"]
+
+[if exp="f.turn >= 3"]
+  [jump target="result_common"]
 [endif]
 
 ; 次の正解を決める（前回と同じ/反対の確率）
 [iscript]
 if (f.prev_answer === -1) {
-  f.answer = Math.floor(Math.random() * 2); // 0/1
+  f.answer = Math.floor(Math.random() * 2); 
 } else {
   var r = Math.random();
   f.answer = (r < 0.7) ? f.prev_answer : (1 - f.prev_answer);
@@ -132,57 +138,57 @@ f.prev_answer = f.answer;
 ; 毎回初期化
 [eval exp="f.did_select = 0"]
 [eval exp="f.player = -1"]
-
+[cm ]
 ; 選択肢（見た目だけキャラ差分）
 [if exp="f.chara=='akane'"]
   [glink text="白" target="choose_0" size="28" x="80" width="300" y="250"]
   [glink text="黒" target="choose_1" size="28" x="80" width="300" y="350"]
-[else]
-        [if exp="f.chara=='mio'"]
+[else]  
+        ; [if exp="f.chara=='mio'"]
         [glink text="ピンク" target="choose_0" size="28" x="80" width="300" y="250"]
         [glink text="ブルー" target="choose_1" size="28" x="80" width="300" y="350"]
         [endif]
-[endif]
-[s]
+; [endif]
+; [s ]
 [jump target="wait_select"]
+
+*wait_select
+; 選ばれるまでここで足止め
+[if exp="f.did_select != 1"]
+  [s]
+  [jump target="wait_select"]
+[endif]
+; [jump target="judge"]
 
 *choose_0
 [eval exp="f.player=0"]
 [eval exp="f.did_select=1"]
 [cm]
-    [jump target="wait_select"]
+[jump target="wait_select"]
 
 *choose_1
 [eval exp="f.player=1"]
 [eval exp="f.did_select=1"]
 [cm]
-    [jump target="wait_select"]
-    
-*wait_select
-; glinkを押して did_select=1 になるまで、ここで足止め
-[if exp="f.did_select != 1"]
-    [jump target="select_pants"]
-[endif]
-[jump target="judge"]
-
-
-
-
+[jump target="wait_select"]
 
 ;========================
 ; 判定（ノーパン→結果→turn++→次へ）
 ;========================
 *judge
-[if exp="f.did_select != 1 || (f.player != 0 && f.player != 1)"]
-    [jump target="game_loop"]
+
+[if exp="f.did_select != 1"]
+  [jump target="select_pants"]
 [endif]
-
+; [if exp="f.did_select != 1 || (f.player != 0 && f.player != 1)"]
+;     [jump target="select_pants"]
+; [endif]
 [wait time=100]
-
 
 ; ==== ★ 勝敗判定 ====
 [if exp="f.player == f.answer"]
     [eval exp="f.pants_color = f.player"]  
+      [eval exp="f.win += 1"]
      [eval exp="f.win_streak += 1"]
     ;  [eval exp="f.did_select = 0"]
     ; 当たり → 選んだ色
@@ -194,6 +200,7 @@ f.prev_answer = f.answer;
 [endif]
 
 ; ★ ここでCG・立ち絵を切り替える
+@layopt layer=message0 visible=false
 [if exp="f.pants_color == 0"]
     [chara_mod name="akane" face="white_pants" ]
     @layopt layer=message0 visible=false
@@ -203,19 +210,18 @@ f.prev_answer = f.answer;
     @layopt layer=message0 visible=false
     [l ]
 [endif]
+@layopt layer=message0 visible=true
 
 ; ↓ そのあと普通に結果処理
 [if exp="f.player == f.answer"]
-    [eval exp="f.win += 1"]
-    [eval exp="f.win_streak += 1"]
+    ; [eval exp="f.win += 1"]
+    ; [eval exp="f.win_streak += 1"]
      [chara_mod name="akane" face="sad" time="100"]
-     @layopt layer=message0 visible=true
     #あかね
     ……正解[p]
 [else]
     [eval exp="f.win_streak = 0"]
      [chara_mod name="akane" face="happy" time="100"]
-     @layopt layer=message0 visible=true
     #あかね
     はずれー[p]
 [endif]
@@ -234,45 +240,51 @@ f.prev_answer = f.answer;
     [endif]
 [endif]
 
-; ノーパン事故（結果台詞の前に割り込み）
-[eval exp="f.nopan = 0"]
-[if exp="f.did_select == 1 && (Math.random() < 0.9)"]
-    [eval exp="f.nopan = 1"]
+*nopan_check
+; 1ターン1回だけ
+[if exp="f.nopan_checked == 1"]
+  [jump target="judge"]
 [endif]
-; [if exp="f.did_select && (Math.random() < 0.9)"]
-;   [eval exp="f.nopan = 1"]
-; [else]
-;   [eval exp="f.nopan = 0"]
-; [endif]
-
-
-[if exp="f.nopan"]
-  [chara_mod name="akane" face="doki"]
+[eval exp="f.nopan_checked = 1"]
+[if exp="f.did_select == 1 && (Math.random() < 0.2)"] 
   [if exp="f.chara=='akane'"]
-    #あかね
-    …[p ]……[p ]…………っ！[p ]
-    [quake count=5 time=200]
-    #あかね
-    しまったーーー！[r ]
-    今、パンツ履いてなかった！！[p ]
     [jump target="end_nopan"]
   [else]
-    #みお
-    …[p ]……[p ]…………っ！[p ]
-    [quake count=5 time=200]
-    #みお
-    さっき……[r ]
-    パンツ、脱いできちゃったんだった……[p ]
-    はずかしー！！[p ]
     [jump target="end_nopan2"]
   [endif]
 [endif]
+[jump target="judge"]
 
+; [if exp="f.nopan"]
+;   [chara_mod name="akane" face="doki"]
+;   [if exp="f.chara=='akane'"]
+;     #あかね
+;     …[p ]……[p ]…………っ！[p ]
+;     [quake count=5 time=200]
+;     #あかね
+;     しまったーーー！[r ]
+;     今、パンツ履いてなかった！！[p ]
+;     [jump target="end_nopan"]
+;   [else]
+;     #みお
+;     …[p ]……[p ]…………っ！[p ]
+;     [quake count=5 time=200]
+;     #みお
+;     さっき……[r ]
+;     パンツ、脱いできちゃったんだった……[p ]
+;     はずかしー！！[p ]
+;     [jump target="end_nopan2"]
+;   [endif]
+; [endif]
+
+;========================
+; ターン終了（turnを進めるのはここだけ）
+;========================
+*turn_end
 [eval exp="f.did_select = 0"]
 [eval exp="f.player = -1"]
-[eval exp="f.nopan = 0"] 
+[eval exp="f.nopan = 0"]
 
-; ★ turnは必ずここで1回だけ進める
 [eval exp="f.turn += 1"]
 [jump target="game_loop"]
 
@@ -386,13 +398,19 @@ f.prev_answer = f.answer;
 [jump storage="scene4.ks"]
 
 *end_nopan
+   [chara_mod name="akane" face="end_nopan" ]
+    #あかね
+    …[r]……[p ]…………っ！[p ]
+    [quake count=5 time=200]
+    #あかね
+    しまったーーー！[r ]
+    今、パンツ履いてなかった！！[p ]
 [chara_hide name="akane"]
-@showmenubutton
 [image storage="../bgimage/no_panEnd.PNG" ]
 #あかね
 わーん！[r ]
 これじゃあたし、痴女だー！[p ]
-
+@showmenubutton
 [position layer="message0" opacity="255" ]
 #
 [font size=40 color=red]
@@ -471,11 +489,14 @@ f.prev_answer = f.answer;
 [jump storage="scene4.ks"]
 
 *end_nopan2
+   [chara_mod name="akane" face="end_nopan" ]
 [chara_hide name="akane"]
 [image storage="../bgimage/room.jpg" ]
 #みお
 もう……、お嫁に行けない……[p ]
-
+[chara_hide name="akane"]
+[image storage="../bgimage/no_panEnd.PNG" ]
+@showmenubutton
 [position layer="message0" opacity="255" ]
 #
 [font size=40 color=red]
