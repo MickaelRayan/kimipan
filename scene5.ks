@@ -15,9 +15,7 @@
 [eval exp="f.nopan_checked = 0"]
 
 ; 設定ここから
-
 [bg storage="rouka.jpg" time="100"]
-
 ;メニューボタンの表示
 @showmenubutton
 
@@ -76,6 +74,7 @@ f.prev_answer = f.answer;
 [chara_show name="akane" face="normal" width="420" height="auto"  left="400" top="0"  time="30" ]
 #あかね
 あなた、いきなり来て何バカなこと言ってるの？[p ]
+
 [chara_mod name="akane" face="before"]
 #あかね
 ……何色だと思う？[p ]
@@ -100,23 +99,26 @@ f.prev_answer = f.answer;
 [jump target="judge"]
 
 *judge
+; ===== 当たり判定 =====
 [if exp="f.player == f.answer"]
-    [eval exp="f.win += 1"]  
-        [if exp="f.answer == 0"]
-        [chara_mod name="akane" face="sad"]
-[else ]
-        [chara_mod name="akane" face="doki"]
+    [eval exp="f.win += 1"]
+    ; 当たり時：選んだ色のパンツ姿
+    [if exp="f.answer == 0"]
+        [chara_mod name="akane" face="white_pants"]
+    [else]
+        [chara_mod name="akane" face="black_pants"]
     [endif]
     #あかね
-    ……正解♡[p ]
+    ……正解[p ]
 [else]
-    ; はずれ：パンツ見えない立ち絵
-   [chara_mod name="akane" face="happy"]
+    ; ===== ハズレ：パンツ出さず通常立ち絵 =====
+    [chara_mod name="akane" face="happy"]
     #あかね
     はずれー[p ]
 [endif]
 [eval exp="f.turn += 1"]
 [jump target="game_loop"]
+
 
 
 *result
