@@ -118,10 +118,14 @@ f.prev_answer = f.answer;
 ; 問題文（2回目以降は共通）
 [if exp="f.chara=='akane'"]
 #あかね
-今履いてるパンツ……、何色だと思う？[p ]
+今履いてるパンツ……、何色だと思う？[rp]
+#
+あかねは顔を赤らめながらも挑むような目で、スカートの裾を摘んだ。[p ]
 [else]
 #みお
 じゃあ、私のパンツの色……、当ててみてください……？[p ]
+#
+みおはおずおずと、スカートの裾を摘んだ。[p ]
 [endif]
 
 ; 選択肢（見た目だけキャラ差分）
@@ -154,9 +158,11 @@ f.prev_answer = f.answer;
 
 ; ==== ★ パンツ色の確定（ここ）====
 [if exp="f.player == f.answer"]
-    [eval exp="f.pants_color = f.player"]  ; 当たり → 選んだ色
+    [eval exp="f.pants_color = f.player"]  
+    ; 当たり → 選んだ色
 [else]
-    [eval exp="f.pants_color = 1 - f.player"] ; ハズレ → 逆の色
+    [eval exp="f.pants_color = 1 - f.player"] 
+    ; ハズレ → 逆の色
 [endif]
 
 ; ★ ここでCG・立ち絵を切り替える
@@ -195,7 +201,7 @@ f.prev_answer = f.answer;
     [quake count=5 time=200]
     #みお
     さっき……[r ]
-    パンツ、脱いできちゃったんだった……♡[p ]
+    パンツ、脱いできちゃったんだった……[p ]
     はずかしー！！[p ]
     [jump target="end_nopan2"]
   [endif]
@@ -225,7 +231,7 @@ f.prev_answer = f.answer;
       ……ねえ[p ]……続けるの？[p ]
     [else]
       #みお
-      ……まだ[p ]……まだ負けてない[p ]
+      ……まだ[p ]……まだ負けてないもん[p ]
     [endif]
   [endif]
 
@@ -235,7 +241,7 @@ f.prev_answer = f.answer;
     ……正解[p ]
   [else]
     #みお
-    ……正解[p ]
+    ……正解です[p ]
   [endif]
 [else]
   [chara_mod name="akane" face="happy"]
@@ -244,7 +250,7 @@ f.prev_answer = f.answer;
     はずれー[p ]
   [else]
     #みお
-    はずれー[p ]
+    あ、はずれです[p ]
   [endif]
 [endif]
 
@@ -276,14 +282,22 @@ f.prev_answer = f.answer;
 [chara_hide name="akane"]
 [image storage="../bgimage/win3_1.PNG" ]
 [quake count=5 time=30]
-#あかね
 [font size=30]
-はぁっ ……、いや ……[r ]
-ホントに ……、入れる気？[p ]
+#
+全勝した……。俺は目の前の婦女子の下着の色を、３回全て当ててみせた。[r ]
+そう思った瞬間、俺の頭の中で何かが弾ける音がした。[p ]
+……[r ]
+…………[p ]
+………………[p ]
+#あかね
+はぁっ……、いや……[r ]
+ホントに……、入れる気？[p ]
 #
 気がつくと俺はあかねを全裸にひん剥き、愚息を膣口に充てているところだった。[p ]
+#
+何を今さら……。
 #あかね
-あっ ……、おちんちんおっきぃ ……[p ]
+あっあっ……、おちんちん入ってくるぅ……[p ]
 #
 じゅぷっ……、じゅぷぷぷぷっ…………♡[p ]
 
