@@ -96,7 +96,7 @@ f.prev_answer = f.answer;
 
 ; 背景・立ち絵（※みお絵を登録したらここを差し替え）
 [bg storage="RF_noon.jpg" time="100"]
-[chara_show name="akane" face="normal"]
+[chara_show name="akane" face="normal" width="420" height="auto"  left="700" top="0"  time="30" ]
 
 ; 初回だけ・キャラ別煽り（turn==0で1回だけ）
 [if exp="f.turn == 0 && f.chara=='akane'"]
@@ -118,9 +118,10 @@ f.prev_answer = f.answer;
 ; 問題文（2回目以降は共通）
 [if exp="f.chara=='akane'"]
 #あかね
-今履いてるパンツ……、何色だと思う？[rp]
+今履いてるパンツ……、何色だと思う？[p]
 #
-あかねは顔を赤らめながらも挑むような目で、スカートの裾を摘んだ。[p ]
+あかねは顔を赤らめながらも[r ]
+挑むような目でスカートの裾を摘んだ。[p ]
 [else]
 #みお
 じゃあ、私のパンツの色……、当ててみてください……？[p ]
@@ -156,12 +157,14 @@ f.prev_answer = f.answer;
 [wait time=100]
 
 
-; ==== ★ パンツ色の確定（ここ）====
+; ==== ★ 勝敗判定 ====
 [if exp="f.player == f.answer"]
     [eval exp="f.pants_color = f.player"]  
+     [eval exp="f.win_streak += 1"]
     ; 当たり → 選んだ色
 [else]
     [eval exp="f.pants_color = 1 - f.player"] 
+    [eval exp="f.win_streak = 0"]
     ; ハズレ → 逆の色
 [endif]
 
@@ -175,11 +178,25 @@ f.prev_answer = f.answer;
 ; ↓ そのあと普通に結果処理
 [if exp="f.player == f.answer"]
     [eval exp="f.win += 1"]
+    [eval exp="f.win_streak += 1"]
     #あかね
     ……正解[p]
 [else]
+    [eval exp="f.win_streak = 0"]
     #あかね
     はずれー[p]
+[endif]
+
+; 2連勝演出などをここに追加
+[if exp="f.win_streak == 2"]
+    [if exp="f.chara == 'akane'"]
+        #あかね
+        ……ちょっと。[r ]
+        なんでそんなに人のパンツの色、当てられるのよ？[p ]
+    [else]
+        #あかね
+        ……ぐ、偶然かしら！？[p ]
+    [endif]
 [endif]
 ; ================
 
@@ -296,10 +313,16 @@ f.prev_answer = f.answer;
 気がつくと俺はあかねを全裸にひん剥き、愚息を膣口に充てているところだった。[p ]
 #
 何を今さら……。
+[image storage="../bgimage/win3_2.PNG" ]
 #あかね
-あっあっ……、おちんちん入ってくるぅ……[p ]
+あっあっ……、おちんちん入ってるぅ……[p ]
 #
 じゅぷっ……、じゅぷぷぷぷっ…………♡[p ]
+[image storage="../bgimage/win3_3.PNG" ]
+#あかね
+あっあん♡
+#
+どぴゅっ……、どぴゅるるるるるっ……♡
 
 [position layer="message0" opacity="255"]
 #
